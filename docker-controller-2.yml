@@ -1,0 +1,34 @@
+services:
+  omada-controller:
+    image: mbentley/omada-controller:latest
+    container_name: omada-controller
+    restart: unless-stopped
+    ports:
+      - "8088:8088"
+      - "8043:8043"
+      - "8843:8843"
+      - "27001:27001/udp"
+      - "27002:27002"
+      - "29810:29810/udp"
+      - "29811:29811"
+      - "29812:29812"
+      - "29813:29813"
+    volumes:
+      - /opt/omada/data:/opt/tplink/EAPController/data
+      - /opt/omada/logs:/opt/tplink/EAPController/logs
+    environment:
+      - TZ=America/Denver
+    networks:
+      omada-macvlan:
+        ipv4_address: 192.168.140.12  # Set your desired static IP
+        
+networks:
+  omada-macvlan:
+    driver: macvlan
+    driver_opts:
+      parent: eno2  # Replace with your host's network interface
+    ipam:
+      config:
+        - subnet: 192.168.140.0/24     # Your network subnet
+          gateway: 192.168.140.1       # Your router IP
+          ip_range: 192.168.140.12/32 # IP range for this container
